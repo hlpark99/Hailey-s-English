@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English MBTI Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+            margin-top: 10px;
+        }
+        .quiz-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .options button {
+            display: block;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin: 5px 0;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background: #0056b3;
+        }
+        .result {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .intro {
+            margin-bottom: 20px;
+        }
+        .intro label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .intro input {
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .intro button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .logo {
+            margin-top: 20px;
+        }
+        .logo img {
+            max-width: 150px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="logo.png" alt="English MBTI Quiz Logo">
+    </div>
+    <h1>English MBTI Quiz</h1>
+    <div class="quiz-container">
+        <div class="intro" id="intro">
+            <label for="role">Who is taking the quiz?</label>
+            <select id="role">
+                <option value="student">Student</option>
+                <option value="parent">Parent</option>
+            </select>
+            <label for="student-name">Student's Name:</label>
+            <input type="text" id="student-name" placeholder="Enter student's name">
+            <div id="parent-fields" style="display: none;">
+                <label for="parent-name">Parent's Name:</label>
+                <input type="text" id="parent-name" placeholder="Enter parent's name">
+            </div>
+            <label for="grade">Grade:</label>
+            <input type="text" id="grade" placeholder="Enter grade (e.g., 1, 2, 3)">
+            <button onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="question-container" style="display: none;">
+            <div class="question" id="question">
+                <h2></h2>
+                <div class="options" id="options"></div>
+            </div>
+        </div>
+        <div class="result" id="result">
+            <p><strong>Results for:</strong> <span id="student-name-result"></span></p>
+            <p><strong>VARK Scores:</strong> V: <span id="score-v"></span>, A: <span id="score-a"></span>, R: <span id="score-r"></span>, K: <span id="score-k"></span></p>
+            <p><strong>English MBTI:</strong> <span id="mbti-result"></span></p>
+            <p><strong>Category:</strong> <span id="category-result"></span></p>
+            <p id="comment-result"></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "I enjoy learning most when:",
+                options: [
+                    { text: "I can see diagrams or charts", type: "V" },
+                    { text: "I can listen to someone explain", type: "A" },
+                    { text: "I can read and write notes", type: "R" },
+                    { text: "I can try it out hands-on", type: "K" }
+                ]
+            },
+            {
+                text: "When I solve problems, I prefer to:",
+                options: [
+                    { text: "Look at visuals like graphs", type: "V" },
+                    { text: "Discuss with others", type: "A" },
+                    { text: "Read instructions", type: "R" },
+                    { text: "Experiment physically", type: "K" }
+                ]
+            },
+            {
+                text: "I like to learn by:",
+                options: [
+                    { text: "Drawing and designing", type: "V" },
+                    { text: "Listening to audio or lectures", type: "A" },
+                    { text: "Reading and writing essays", type: "R" },
+                    { text: "Trying and building", type: "K" }
+                ]
+            },
+            {
+                text: "When working in a team, I usually:",
+                options: [
+                    { text: "Create visuals or presentations", type: "V" },
+                    { text: "Share ideas verbally", type: "A" },
+                    { text: "Write detailed plans or summaries", type: "R" },
+                    { text: "Take charge of hands-on tasks", type: "K" }
+                ]
+            },
+            {
+                text: "To remember new information, I prefer to:",
+                options: [
+                    { text: "Draw or visualize it", type: "V" },
+                    { text: "Repeat it out loud", type: "A" },
+                    { text: "Write it down multiple times", type: "R" },
+                    { text: "Use physical objects or activities", type: "K" }
+                ]
+            },
+            {
+                text: "My favorite class activities are:",
+                options: [
+                    { text: "Using charts or mind maps", type: "V" },
+                    { text: "Listening to group discussions", type: "A" },
+                    { text: "Reading books and taking notes", type: "R" },
+                    { text: "Doing experiments or making models", type: "K" }
+                ]
+            },
+            {
+                text: "When faced with a challenge, I usually:",
+                options: [
+                    { text: "Sketch ideas to solve it", type: "V" },
+                    { text: "Talk through it with others", type: "A" },
+                    { text: "Research and write about it", type: "R" },
+                    { text: "Try different hands-on solutions", type: "K" }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        const scores = { V: 0, A: 0, R: 0, K: 0 };
+
+        const introElement = document.getElementById("intro");
+        const roleElement = document.getElementById("role");
+        const studentNameElement = document.getElementById("student-name");
+        const parentNameElement = document.getElementById("parent-name");
+        const gradeElement = document.getElementById("grade");
+        const questionElement = document.getElementById("question");
+        const optionsElement = document.getElementById("options");
+        const resultElement = document.getElementById("result");
+        const scoreVElement = document.getElementById("score-v");
+        const scoreAElement = document.getElementById("score-a");
+        const scoreRElement = document.getElementById("score-r");
+        const scoreKElement = document.getElementById("score-k");
+        const studentNameResult = document.getElementById("student-name-result");
+        const mbtiResult = document.getElementById("mbti-result");
+        const categoryResult = document.getElementById("category-result");
+        const commentResult = document.getElementById("comment-result");
+
+        function startQuiz() {
+            const studentName = studentNameElement.value;
+
+            if (!studentName) {
+                alert("Please enter the student's name.");
+                return;
+            }
+
+            introElement.style.display = "none";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionElement.querySelector("h2").textContent = question.text;
+            optionsElement.innerHTML = "";
+            question.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option.text;
+                button.onclick = () => selectOption(option.type);
+                optionsElement.appendChild(button);
+            });
+        }
+
+        function selectOption(type) {
+            scores[type]++;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const studentName = studentNameElement.value;
+
+            studentNameResult.textContent = studentName;
+            scoreVElement.textContent = scores.V;
+            scoreAElement.textContent = scores.A;
+            scoreRElement.textContent = scores.R;
+            scoreKElement.textContent = scores.K;
+
+            const mbti = `${scores.V > scores.A && scores.V > scores.R && scores.V > scores.K ? "V" : ""}` +
+                         `${scores.A > scores.V && scores.A > scores.R && scores.A > scores.K ? "A" : ""}` +
+                         `${scores.R > scores.V && scores.R > scores.A && scores.R > scores.K ? "R" : ""}` +
+                         `${scores.K > scores.V && scores.K > scores.A && scores.K > scores.R ? "K" : ""}`;
+
+            mbtiResult.textContent = mbti || "Balanced Learner";
+
+            let category = "";
+            if (mbti.includes("V")) category = "The Visual Learner";
+            else if (mbti.includes("A")) category = "The Auditory Learner";
+            else if (mbti.includes("R")) category = "The Reader/Writer";
+            else if (mbti.includes("K")) category = "The Kinesthetic Learner";
+
+            categoryResult.textContent = category;
+            commentResult.textContent = `${studentName}, based on your results, you are a ${category}. This means you prefer learning through ${category === "The Visual Learner" ? "images and visual aids" :
+                category === "The Auditory Learner" ? "listening and discussions" :
+                category === "The Reader/Writer" ? "reading and writing" :
+                "hands-on experiences and activities"}.`;
+
+            resultElement.style.display = "block";
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
